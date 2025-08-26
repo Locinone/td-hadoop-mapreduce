@@ -1,0 +1,27 @@
+  hadoop jar /opt/hadoop-3.3.1/share/hadoop/tools/lib/hadoop-streaming-3.3.1.jar \
+  -input /twitter_data_partitioned/year=2024/month=08/tweets.json \
+  -output /output/hashtags_august \
+  -mapper "bash -c '/usr/bin/python3 hashtags_mapper.py'" \
+  -reducer "bash -c '/usr/bin/python3 hashtags_reducer.py'" \
+  -file jobs/hashtag_mapreduce/hashtags_mapper.py \
+  -file jobs/hashtag_mapreduce/hashtags_reducer.py
+
+  hadoop jar /opt/hadoop-3.3.1/share/hadoop/tools/lib/hadoop-streaming-3.3.1.jar \
+  -input /twitter_data_partitioned/year=2024/month=08/tweets.json \
+  -output /output/sentiment_august \
+  -mapper "bash -c '/usr/bin/python3 sentiment_mapper.py'" \
+  -reducer "bash -c '/usr/bin/python3 sentiment_reducer.py'" \
+  -file jobs/sentiment_mapreduce/sentiment_mapper.py \
+  -file jobs/sentiment_mapreduce/sentiment_reducer.py
+
+  hadoop jar /opt/hadoop-3.3.1/share/hadoop/tools/lib/hadoop-streaming-3.3.1.jar \
+  -input /twitter_data_partitioned/year=2024/month=08/tweets.json \
+  -output /output/tweets_by_region \
+  -mapper "python3 tweets_by_region_mapper.py" \
+  -reducer "python3 tweets_by_region_reducer.py" \
+  -files jobs/sentiment_mapreduce/tweets_by_region_mapper.py,jobs/sentiment_mapreduce/tweets_by_region_reducer.py
+
+
+  hdfs dfs -rm -r /output/hashtags_august
+  hdfs dfs -rm -r /output/sentiment_august
+  hdfs dfs -rm -r /output/tweets_by_region
